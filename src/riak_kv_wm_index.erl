@@ -481,7 +481,7 @@ encode_results(true, Results, Continuation) ->
     jiffy:encode(JsonKeys2);
 encode_results(false, Results, Continuation) ->
     JustTheKeys = filter_values(Results),
-    JsonKeys1 = [{[{<<?Q_KEYS>>, JustTheKeys}] ++ jiffify_continuation(Continuation)}],
+    JsonKeys1 = {[{<<?Q_KEYS>>, JustTheKeys}] ++ jiffify_continuation(Continuation)},
     jiffy:encode(JsonKeys1).
 
 mochify_continuation(undefined) ->
