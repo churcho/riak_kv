@@ -476,18 +476,23 @@ encode_results(ReturnTerms, Results) ->
     encode_results(ReturnTerms, Results, undefined).
 
 encode_results(true, Results, Continuation) ->
-    JsonKeys2 = {struct, [{?Q_RESULTS, [{struct, [{Val, Key}]} || {Val, Key} <- Results]}] ++
-                     mochify_continuation(Continuation)},
-    mochijson2:encode(JsonKeys2);
+    JsonKeys2 = {[{<<?Q_RESULTS>>, [{[{Val, Key}]} || {Val, Key} <- Results]}] ++
+                     jiffify_continuation(Continuation)},
+    jiffy:encode(JsonKeys2);
 encode_results(false, Results, Continuation) ->
     JustTheKeys = filter_values(Results),
-    JsonKeys1 = {struct, [{?Q_KEYS, JustTheKeys}] ++ mochify_continuation(Continuation)},
-    mochijson2:encode(JsonKeys1).
+    JsonKeys1 = [{[{<<?Q_KEYS>>, JustTheKeys}] ++ jiffify_continuation(Continuation)}],
+    jiffy:encode(JsonKeys1).
 
 mochify_continuation(undefined) ->
     [];
 mochify_continuation(Continuation) ->
     [{?Q_2I_CONTINUATION, Continuation}].
+
+jiffify_continuation(undefined) ->
+    [];
+jiffify_continuation(Continuation) ->
+    [{<<?Q_2I_CONTINUATION>>, Continuation}].
 
 filter_values([]) ->
     [];
